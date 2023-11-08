@@ -1,0 +1,26 @@
+module demux_tb;
+  reg a,s0,s1;
+  wire y1,y2,y3,y4;
+  
+  demux x1(s0,s1,a,y1,y2,y3,y4);
+  initial begin
+    $dumpfile("mux.vcd");
+    $dumpvars(1);
+    
+    $monitor("s0=%b s1=%b y1=%b y2=%b y3=%b y4=%b",s0,s1,y1,y2,y3,y4);
+    
+    a=1'b1;
+    
+    s0=1'b0;s1=1'b0;
+    
+    #2 s0=1'b0;s1=1'b1;
+    
+    #2 s0=1'b1;s1=1'b0;
+    
+    #2 s0=1'b1;s1=1'b1;
+    
+  end
+endmodule
+
+    
+  

@@ -1,0 +1,22 @@
+// Code your testbench here
+// or browse Examples
+module half_tb;
+  reg a,b;
+  wire s,c;
+  
+  half_adder x(a,b,s,c);
+  initial begin
+    $dumpfile("gate.vcd");
+    $dumpvars(1);
+    
+    $monitor("a=%b b=%b s=%b c=%b",a,b,s,c);
+    
+    a=1'b0;b=1'b0;
+    #2 a=1'b0;b=1'b1;
+    #2 a=1'b1;b=1'b0;
+    #2 a=1'b1;b=1'b1;
+    
+  end
+endmodule
+    
+  

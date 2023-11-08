@@ -1,0 +1,12 @@
+module demux(s0,s1,a,y1,y2,y3,y4);
+  input a,s0,s1;
+  output y1,y2,y3,y4;
+  wire s0n,s1n;
+  
+  assign y1=(~s0)&&(~s1)&&a;
+  assign y2=(~s0)&&(s1)&&a;
+  assign y3=s0 && ~s1 &&a;
+  assign y4=s0&&s1&&a;
+  
+  
+endmodule

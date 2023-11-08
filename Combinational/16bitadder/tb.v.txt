@@ -1,0 +1,33 @@
+module tb_add16();
+
+    reg [15:0] A, B;
+    wire [15:0] out;
+    
+
+    add16 dut(
+        .A(A),
+        .B(B),
+        .out(out)
+    );
+
+    initial begin
+        $dumpfile("gate.vcd");
+        $dumpvars(1);
+        $monitor("A = %b, B = %b, Sum = %b", A, B, out);
+        
+        A = 4'd5;
+        B = 4'd3;
+        #10;
+        
+        A = 4'd10;
+        B = 4'd7;
+        #10;
+      
+        A = 16'd27; 
+        #10;
+
+        // Add more test cases 
+        
+        $finish;
+    end
+endmodule

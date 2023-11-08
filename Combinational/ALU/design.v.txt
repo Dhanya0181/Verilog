@@ -1,0 +1,70 @@
+module HalfAdder(input A, input B, output Sum, output Carry);
+    assign Sum = A ^ B;  // XOR gate for Sum
+    assign Carry = A & B;  // AND gate for Carry
+endmodule
+
+
+
+module FullAdder(input A, input B, input Cin, output Sum, output Cout);
+    wire S1, C1, C2;
+
+    // First Half Adder
+    HalfAdder HA1(.A(A), .B(B), .Sum(S1), .Carry(C1));
+
+    // Second Half Adder
+    HalfAdder HA2(.A(S1), .B(Cin), .Sum(Sum), .Carry(C2));
+
+    // OR gate to generate final carry-out
+    assign Cout = C1 | C2;
+endmodule
+
+
+
+module add16(input [15:0] A, input [15:0] B, output [15:0] out);
+    wire [16:0] c; // An extra bit to accommodate the carry in the full adder chain
+
+  FullAdder FA0(.A(A[0]), .B(B[0]), .Cin(1'b0), .Sum(out[0]), .Cout(c[0]));
+
+    genvar i;
+    generate
+      for (i = 1; i < 16; i = i + 1) begin 
+            FullAdder FA(
+                .A(A[i]),
+                .B(B[i]),
+              .Cin(c[i-1]),
+                .Sum(out[i]),
+                .Cout(c[i])
+            );
+        end
+    endgenerate
+endmodule
+
+module Inc16(input [15:0]A,output [15:0]out);
+  wire [15:0]b;
+  assign b=16'b1;
+  add16 add16(.A(A),.B(b),.out(out));
+        endmodule
+  
+module ALU(input [15:0]x,[15:0]y, output [15:0]out,zr,ng);
+  wire zx,nx,zy,ny,f,no,out;
+  always @* begin
+    MUX mux1(.A(x),.B(16'b0),.s(zx),.out(c1));
+    not16 n1(c1,nc1);
+    MUX mux2(.A(y),.B(16'b0),.s(zy),.out(c2));
+    not16 n2(c2,nc2);
+    MUX mux3(.A(c1),.B(nc1),.s(nx),.out(c3));
+    MUX mux4(.A(c2),.B(nc2),.s(ny),.out(c4));
+    
+    And16 and1(.a(c3),.b(c4),.c(c5));
+    add16 inc(.a(c3),.b(c4),.c(c6));
+    
+    MUX mux5(.A(c5),.B(c6),.s(f),.out(c7));
+    not16 n3(c7,nc7);
+    MUX mux6(.A(c7),.B(nc7),.s(no),.out(out));
+    
+        
+   
+  
+  
+    
+  
