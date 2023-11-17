@@ -1,3 +1,47 @@
+module mux(input a, b, sel, output out);
+  assign out=((~sel)&&a)||(sel&&b);
+endmodule
+
+module mux16(input [15:0] a,input [15:0] b, input sel, output [15:0] out);
+    genvar i;
+    generate
+        for (i = 0; i < 16; i = i + 1) begin 
+            mux mux_inst (
+                .a(a[i]),
+                .b(b[i]),
+                .sel(sel),
+                .out(out[i])
+            );
+        end
+    endgenerate
+endmodule
+
+
+module and16(input [15:0]a,input [15:0]b,output [15:0]out);
+  genvar i;
+  generate
+    for (i=0;i<16;i=i+1) begin
+      assign out[i] = a[i] & b[i];
+    end
+  endgenerate
+endmodule
+
+module not16(input [15:0] a, output [15:0] out);
+  genvar i;
+  generate
+    for (i = 0; i < 16; i = i + 1) begin
+      assign out[i] = !a[i];
+    end
+  endgenerate
+endmodule
+
+
+module Or8Way(input [7:0] a, output out);
+  assign out = |a;
+endmodule
+
+
+
 module HalfAdder(input A, input B, output Sum, output Carry);
     assign Sum = A ^ B;  // XOR gate for Sum
     assign Carry = A & B;  // AND gate for Carry
@@ -8,13 +52,8 @@ endmodule
 module FullAdder(input A, input B, input Cin, output Sum, output Cout);
     wire S1, C1, C2;
 
-    // First Half Adder
     HalfAdder HA1(.A(A), .B(B), .Sum(S1), .Carry(C1));
-
-    // Second Half Adder
     HalfAdder HA2(.A(S1), .B(Cin), .Sum(Sum), .Carry(C2));
-
-    // OR gate to generate final carry-out
     assign Cout = C1 | C2;
 endmodule
 
@@ -39,32 +78,32 @@ module add16(input [15:0] A, input [15:0] B, output [15:0] out);
     endgenerate
 endmodule
 
-module Inc16(input [15:0]A,output [15:0]out);
-  wire [15:0]b;
-  assign b=16'b1;
-  add16 add16(.A(A),.B(b),.out(out));
-        endmodule
-  
-module ALU(input [15:0]x,[15:0]y, output [15:0]out,zr,ng);
-  wire zx,nx,zy,ny,f,no,out;
-  always @* begin
-    MUX mux1(.A(x),.B(16'b0),.s(zx),.out(c1));
-    not16 n1(c1,nc1);
-    MUX mux2(.A(y),.B(16'b0),.s(zy),.out(c2));
-    not16 n2(c2,nc2);
-    MUX mux3(.A(c1),.B(nc1),.s(nx),.out(c3));
-    MUX mux4(.A(c2),.B(nc2),.s(ny),.out(c4));
-    
-    And16 and1(.a(c3),.b(c4),.c(c5));
-    add16 inc(.a(c3),.b(c4),.c(c6));
-    
-    MUX mux5(.A(c5),.B(c6),.s(f),.out(c7));
-    not16 n3(c7,nc7);
-    MUX mux6(.A(c7),.B(nc7),.s(no),.out(out));
-    
-        
-   
-  
-  
-    
-  
+
+
+module ALU (
+  input [15:0] x,
+  input [15:0] y,
+  input zx, nx, zy, ny, f, no,
+  output [15:0] out
+);
+
+  wire [15:0] c1, nc1, c2, nc2, c3, c4, c5, c6, c7, nc7;
+
+  mux16 mux1(.a(x), .b(16'b0), .sel(zx), .out(c1));
+  not16 not1(.a(c1), .out(nc1));
+
+  mux16 mux2(.a(y), .b(16'b0), .sel(zy), .out(c2));
+  not16 not2(.a(c2), .out(nc2));
+
+  mux16 mux3(.a(c1), .b(nc1), .sel(nx), .out(c3));
+  mux16 mux4(.a(c2), .b(nc2), .sel(ny), .out(c4));
+
+  and16 and1(.a(c3), .b(c4), .out(c5));
+  add16 add1(.A(c3), .B(c4), .out(c6));
+
+  mux16 mux5(.a(c5), .b(c6), .sel(f), .out(c7));
+  not16 not3(.a(c7), .out(nc7));
+
+  mux16 mux6(.a(c7), .b(nc7), .sel(no), .out(out));
+
+endmodule
