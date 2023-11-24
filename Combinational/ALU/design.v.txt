@@ -36,11 +36,6 @@ module not16(input [15:0] a, output [15:0] out);
 endmodule
 
 
-module Or8Way(input [7:0] a, output out);
-  assign out = |a;
-endmodule
-
-
 
 module HalfAdder(input A, input B, output Sum, output Carry);
     assign Sum = A ^ B;  // XOR gate for Sum
@@ -51,7 +46,6 @@ endmodule
 
 module FullAdder(input A, input B, input Cin, output Sum, output Cout);
     wire S1, C1, C2;
-
     HalfAdder HA1(.A(A), .B(B), .Sum(S1), .Carry(C1));
     HalfAdder HA2(.A(S1), .B(Cin), .Sum(Sum), .Carry(C2));
     assign Cout = C1 | C2;
@@ -62,7 +56,7 @@ endmodule
 module add16(input [15:0] A, input [15:0] B, output [15:0] out);
     wire [16:0] c; // An extra bit to accommodate the carry in the full adder chain
 
-  FullAdder FA0(.A(A[0]), .B(B[0]), .Cin(1'b0), .Sum(out[0]), .Cout(c[0]));
+    FullAdder FA0(.A(A[0]), .B(B[0]), .Cin(1'b0), .Sum(out[0]), .Cout(c[0]));
 
     genvar i;
     generate
